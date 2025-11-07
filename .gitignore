@@ -1,0 +1,26 @@
+# Gradle
+.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+
+# Logs / Cache
+local.properties
+*.log
+
+# Keystores y secretos
+*.keystore
+*.jks
+*.pem
+*.p12
+**/secrets/**
+
+# Artifacts pesados
+*.apk
+*.aab
+
+# Mac/OS
+.DS_Store
