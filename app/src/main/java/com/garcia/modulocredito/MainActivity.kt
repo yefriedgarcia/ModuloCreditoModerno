@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.garcia.modulocredito.data.di.appModule
-import com.garcia.modulocredito.ui.theme.CreditScreen
+import com.garcia.modulocredito.ui.CreditScreen
 import com.garcia.modulocredito.ui.theme.ModuloCreditoTheme
 import com.garcia.modulocredito.ui.viewmodel.CreditViewModel
 import org.koin.androidx.compose.koinViewModel

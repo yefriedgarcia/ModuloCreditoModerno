@@ -1,4 +1,4 @@
-package com.garcia.modulocredito.ui.theme
+package com.garcia.modulocredito.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.garcia.modulocredito.ui.theme.Purple40
+import com.garcia.modulocredito.ui.theme.Purple80
 import com.garcia.modulocredito.ui.viewmodel.CreditViewModel
 import java.text.NumberFormat
 import java.util.Locale
