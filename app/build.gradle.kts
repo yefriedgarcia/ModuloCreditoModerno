@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    jacoco
+    id("jacoco")
 }
 
 android {
@@ -45,38 +45,47 @@ android {
 
 afterEvaluate {
     tasks.withType<Test>().configureEach {
-        finalizedBy(tasks.named("jacocoTestReport"))
+        extensions.configure(JacocoTaskExtension::class) {
+            isIncludeNoLocationClasses = true
+            excludes = listOf("jdk.internal.*")
+        }
+        finalizedBy(tasks.named("jacocoDebugUnitTestReport"))
     }
 
-    tasks.register<JacocoReport>("jacocoTestReport") {
-        val buildDir = layout.buildDirectory.get().asFile
+    tasks.register<JacocoReport>("jacocoDebugUnitTestReport") {
+        dependsOn("testDebugUnitTest")
 
-        dependsOn(tasks.withType<Test>())
+        val buildDir = layout.buildDirectory.get().asFile
 
         reports {
             xml.required.set(true)
             html.required.set(true)
         }
 
-        classDirectories.setFrom(
-            fileTree("$buildDir/tmp/kotlin-classes/debug") {
-                exclude(
-                    "**/R.class",
-                    "**/R\$*.class",
-                    "**/BuildConfig.*",
-                    "**/Manifest*.*"
-                )
-            }
-        )
-        sourceDirectories.setFrom(files("src/main/java"))
+        val debugTree = fileTree("${buildDir}/tmp/kotlin-classes/debug") {
+            exclude(
+                "**/R.class",
+                "**/R\$*.class",
+                "**/BuildConfig.*",
+                "**/Manifest*.*",
+                "**/*Test*.*",
+                "**/di/**"
+            )
+        }
+
+        classDirectories.setFrom(debugTree)
+        sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
         executionData.setFrom(
             fileTree(buildDir) {
-                include("**/jacoco/test*.exec", "**/outputs/unit_test_code_coverage/**/*.ec")
+                include(
+                    "jacoco/testDebugUnitTest.exec",
+                    "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+                    "outputs/code_coverage/debugAndroidTest/connected/**/*.ec"
+                )
             }
         )
     }
 }
-
 
 dependencies {
     implementation(platform(libs.okhttp.bom))
