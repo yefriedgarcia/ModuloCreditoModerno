@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    jacoco
 }
 
 android {
@@ -26,6 +27,9 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            enableUnitTestCoverage = true
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -38,6 +42,41 @@ android {
         compose = true
     }
 }
+
+afterEvaluate {
+    tasks.withType<Test>().configureEach {
+        finalizedBy(tasks.named("jacocoTestReport"))
+    }
+
+    tasks.register<JacocoReport>("jacocoTestReport") {
+        val buildDir = layout.buildDirectory.get().asFile
+
+        dependsOn(tasks.withType<Test>())
+
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+        }
+
+        classDirectories.setFrom(
+            fileTree("$buildDir/tmp/kotlin-classes/debug") {
+                exclude(
+                    "**/R.class",
+                    "**/R\$*.class",
+                    "**/BuildConfig.*",
+                    "**/Manifest*.*"
+                )
+            }
+        )
+        sourceDirectories.setFrom(files("src/main/java"))
+        executionData.setFrom(
+            fileTree(buildDir) {
+                include("**/jacoco/test*.exec", "**/outputs/unit_test_code_coverage/**/*.ec")
+            }
+        )
+    }
+}
+
 
 dependencies {
     implementation(platform(libs.okhttp.bom))
