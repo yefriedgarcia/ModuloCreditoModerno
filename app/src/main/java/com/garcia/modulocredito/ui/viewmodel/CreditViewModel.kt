@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.garcia.modulocredito.domain.CreditRepository
 import com.garcia.modulocredito.domain.model.UiState
 import com.garcia.modulocredito.domain.usecase.CalculateInstallmentUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -15,13 +18,19 @@ class CreditViewModel(
     private val calculateInstallmentUseCase: CalculateInstallmentUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(UiState(loading = true))
-    val state: StateFlow<UiState> = _state
+    private val _state = MutableStateFlow(UiState())
+    val state: StateFlow<UiState> = _state.asStateFlow()
 
     init {
+        initialize()
+    }
+
+    fun initialize() {
         viewModelScope.launch {
             try {
+                _state.update { it.copy(loading = true) }
                 val cfg = repo.fetchConfig()
+                delay(1500)
                 _state.value = UiState(
                     config = cfg,
                     loading = false
