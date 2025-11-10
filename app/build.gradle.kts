@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    jacoco
+    id("jacoco")
 }
 
 android {
@@ -45,6 +45,10 @@ android {
 
 afterEvaluate {
     tasks.withType<Test>().configureEach {
+        extensions.configure(JacocoTaskExtension::class) {
+            isIncludeNoLocationClasses = true
+            excludes = listOf("jdk.internal.*")
+        }
         finalizedBy(tasks.named("jacocoDebugUnitTestReport"))
     }
 
